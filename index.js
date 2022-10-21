@@ -1,15 +1,18 @@
-require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-
+require("dotenv").config();
 const mongoose = require("mongoose");
 
 const cloudinary = require("cloudinary").v2;
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+try {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+} catch (error) {
+  console.log(error);
+}
 
 const app = express();
 app.use(cors());
