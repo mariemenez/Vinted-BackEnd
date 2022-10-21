@@ -26,7 +26,12 @@ app.use(userRoutes);
 app.use(offerRoutes);
 
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to my project hello 🚀🚀🚀🚀🚀🚀" });
+  try {
+    res.json({ message: "Welcome to my project hello 🚀🚀🚀🚀🚀🚀" });
+  } catch (error) {
+    console.log(error);
+    res.json(error);
+  }
 });
 
 app.all("*", (req, res) => {
