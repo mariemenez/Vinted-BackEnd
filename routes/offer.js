@@ -137,7 +137,7 @@ router.get("/offers", async (req, res) => {
     }
 
     const page = req.query.page;
-    const limit = 5;
+    const limit = 10;
     let pageRequired = 1;
     if (page) {
       pageRequired = page;
