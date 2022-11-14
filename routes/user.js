@@ -17,64 +17,66 @@ const convertToBase64 = (file) => {
 // ROUTE POUR CREER UN COMPTE
 router.post("/user/signup", fileUpload(), async (req, res) => {
   try {
+    console.log(req.files);
     const isEmailExist = await User.findOne({ email: req.body.email });
     if (isEmailExist !== null) {
       return res.json({ message: "Cet email est déjà associé à un compte" });
-    }
-
-    if (req.body.username === "") {
-      return res.json({ message: "L'username n'est pas renseigné" });
-    }
-
-    const email = req.body.email;
-    const username = req.body.username;
-    const avatar = req.files;
-    const password = req.body.password;
-    const newsletter = req.body.newsletter;
-    const salt = uid2(16);
-    const hash = SHA256(salt + password).toString(encBase64);
-    const token = uid2(64);
-
-    if (req.files) {
-      const pictureConverted = convertToBase64(req.files.avatar);
-      const result = await cloudinary.uploader.upload(pictureConverted);
-
-      const newUser = new User({
-        email: email,
-        account: {
-          username: username,
-          avatar: result,
-        },
-        newsletter: newsletter,
-        token: token,
-        hash: hash,
-        salt: salt,
-      });
-      res.json({
-        id: newUser._id,
-        email,
-        token,
-        account: { username, avatar: result },
-      });
     } else {
-      const newUser = new User({
-        email: email,
-        account: {
-          username: username,
-        },
-        newsletter: newsletter,
-        token: token,
-        hash: hash,
-        salt: salt,
-      });
-      res.json({
-        id: newUser._id,
-        email,
-        token,
-        account: { username },
-      });
+      if (req.body.username === "") {
+        return res.json({ message: "L'username n'est pas renseigné" });
+      } else {
+        const email = req.body.email;
+        const username = req.body.username;
+        const avatar = req.files;
+        const password = req.body.password;
+        const newsletter = req.body.newsletter;
+        const salt = uid2(16);
+        const hash = SHA256(salt + password).toString(encBase64);
+        const token = uid2(64);
+
+        if (req.files) {
+          const pictureConverted = convertToBase64(req.files.avatar);
+          const result = await cloudinary.uploader.upload(pictureConverted);
+
+          const newUser = new User({
+            email: email,
+            account: {
+              username: username,
+              avatar: result,
+            },
+            newsletter: newsletter,
+            token: token,
+            hash: hash,
+            salt: salt,
+          });
+          await newUser.save();
+          res.json({
+            id: newUser._id,
+            email,
+            token,
+            account: { username, avatar: result },
+          });
+        } else {
+          const newUser = new User({
+            email: email,
+            account: {
+              username: username,
+            },
+            newsletter: newsletter,
+            token: token,
+            hash: hash,
+            salt: salt,
+          });
+          await newUser.save();
+          res.json({
+            id: newUser._id,
+            email,
+            token,
+            account: { username },
+          });
+        }
+      }
     }
-    await newUser.save();
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
