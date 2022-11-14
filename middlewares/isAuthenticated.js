@@ -6,9 +6,10 @@ const isAuthenticated = async (req, res, next) => {
     const user = await User.findOne({ token: token }).select("account");
     if (!user) {
       res.json({ message: "Pas autorisé" });
+    } else {
+      req.user = user;
+      next();
     }
-    req.user = user;
-    next();
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
