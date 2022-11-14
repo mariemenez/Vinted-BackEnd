@@ -35,27 +35,46 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
     const hash = SHA256(salt + password).toString(encBase64);
     const token = uid2(64);
 
-    const pictureConverted = convertToBase64(req.files.avatar);
-    const result = await cloudinary.uploader.upload(pictureConverted);
+    if (req.files) {
+      const pictureConverted = convertToBase64(req.files.avatar);
+      const result = await cloudinary.uploader.upload(pictureConverted);
 
-    const newUser = new User({
-      email: email,
-      account: {
-        username: username,
-        avatar: result,
-      },
-      newsletter: newsletter,
-      token: token,
-      hash: hash,
-      salt: salt,
-    });
+      const newUser = new User({
+        email: email,
+        account: {
+          username: username,
+          avatar: result,
+        },
+        newsletter: newsletter,
+        token: token,
+        hash: hash,
+        salt: salt,
+      });
+      res.json({
+        id: newUser._id,
+        email,
+        token,
+        account: { username, avatar: result },
+      });
+    } else {
+      const newUser = new User({
+        email: email,
+        account: {
+          username: username,
+        },
+        newsletter: newsletter,
+        token: token,
+        hash: hash,
+        salt: salt,
+      });
+      res.json({
+        id: newUser._id,
+        email,
+        token,
+        account: { username },
+      });
+    }
     await newUser.save();
-    res.json({
-      id: newUser._id,
-      email,
-      token,
-      account: { username, avatar: result },
-    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
