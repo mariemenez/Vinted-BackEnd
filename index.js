@@ -42,14 +42,16 @@ app.get("/", (req, res) => {
 // ROUTE DE PAIEMENT STRIPE
 app.post("/payment", async (req, res) => {
   const stripeToken = req.body.stripeToken;
+  const price = req.body.newPrice;
+  const description = req.body.description;
 
   const response = await stripe.charges.create({
-    amout: 2000,
+    amount: price,
     currency: "eur",
-    description: "description de l'objet acheté",
+    description: description,
     source: stripeToken,
   });
-
+  // console.log(req.body);
   res.json(response);
 });
 
