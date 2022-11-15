@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 
 const cloudinary = require("cloudinary").v2;
 
+const Stripe = require("stripe")(process.env.STRIPE_API_SECRET);
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -35,6 +37,10 @@ app.get("/", (req, res) => {
     console.log(error);
     res.json(error);
   }
+});
+
+app.post("/payment", (req, res) => {
+  res.json("OK");
 });
 
 app.all("*", (req, res) => {

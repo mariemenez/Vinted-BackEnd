@@ -3,6 +3,8 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^1.15.0",
+    "@stripe/stripe-js": "^1.44.1",
     "cloudinary": "^1.32.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
