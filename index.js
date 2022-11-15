@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 const cloudinary = require("cloudinary").v2;
 
-const Stripe = require("stripe")(process.env.STRIPE_API_SECRET);
+const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
 
 const app = express();
 app.use(cors());
@@ -39,8 +39,18 @@ app.get("/", (req, res) => {
   }
 });
 
-app.post("/payment", (req, res) => {
-  res.json("OK");
+// ROUTE DE PAIEMENT STRIPE
+app.post("/payment", async (req, res) => {
+  const stripeToken = req.body.stripeToken;
+
+  const response = await stripe.charges.create({
+    amout: 2000,
+    currency: "eur",
+    description: "description de l'objet acheté",
+    source: stripeToken,
+  });
+
+  res.json(response);
 });
 
 app.all("*", (req, res) => {
