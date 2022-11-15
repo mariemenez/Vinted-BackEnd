@@ -7,6 +7,8 @@ const cloudinary = require("cloudinary").v2;
 
 const stripe = require("stripe")(process.env.STRIPE_API_SECRET);
 
+const Offer = require("./models/Offer");
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -44,6 +46,7 @@ app.post("/payment", async (req, res) => {
   const stripeToken = req.body.stripeToken;
   const price = req.body.newPrice;
   const description = req.body.description;
+  const id = req.body.id.id;
 
   const response = await stripe.charges.create({
     amount: price,
@@ -51,7 +54,8 @@ app.post("/payment", async (req, res) => {
     description: description,
     source: stripeToken,
   });
-  // console.log(req.body);
+  console.log(id);
+  await Offer.findByIdAndDelete(id);
   res.json(response);
 });
 
